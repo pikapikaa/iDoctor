@@ -10,7 +10,8 @@ export interface Patient {
   id: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  birthDate: string;
+  image: string;
 }
 
 export interface Session {
