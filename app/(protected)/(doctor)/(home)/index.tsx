@@ -1,27 +1,40 @@
-import { Link } from "expo-router";
-import { useContext } from "react";
-import { Button, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { AuthContext } from "@/utils/authContext";
+import { useGetPatientsQuery } from "./_doctorQueries";
 
 export default function Index() {
-  const authState = useContext(AuthContext);
-  const { logOut } = authState;
+  const { data, isLoading } = useGetPatientsQuery();
+
+  if (isLoading)
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>main</Text>
-      <Link href="/patientDetail" push asChild>
-        <Button title="go to patient info" />
-      </Link>
-
-      <Button title="logout" onPress={logOut} />
+    <View style={styles.container}>
+      <FlatList
+        data={data}
+        renderItem={({ item }) => {
+          return <Text>{item.firstName}</Text>;
+        }}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
