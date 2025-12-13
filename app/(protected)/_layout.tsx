@@ -1,14 +1,5 @@
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 
-export default function ProtectedLayout() {
-  return (
-    <Stack>
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack>
-  );
+export default function RootLayout() {
+  return <Slot />;
 }

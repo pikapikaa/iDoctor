@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -15,6 +16,24 @@ import { AuthContext } from "@/utils/authContext";
 const LoginScreen = () => {
   const authState = useContext(AuthContext);
   const { logIn } = authState;
+  const [value, setValue] = useState("");
+
+  const onChange = (text: string) => {
+    setValue(text);
+  };
+
+  const onSumbitHandler = (text: string) => {
+    if (!text) return;
+
+    const username = text.toLowerCase();
+    if (!["doctor", "patient"].includes(username)) {
+      Alert.alert("Error", "Text 'doctor' or 'patient'");
+      return;
+    }
+    logIn(username);
+  };
+
+  const disabled = !value;
 
   return (
     <KeyboardAvoidingView
@@ -28,12 +47,25 @@ const LoginScreen = () => {
       >
         <Text style={styles.title}>Login</Text>
         <TextInput
+          value={value}
           placeholder="Enter your login"
           placeholderTextColor="#9CA3AF"
           style={styles.input}
+          onChangeText={(value) => {
+            onChange(value);
+          }}
+          onSubmitEditing={() => {
+            onSumbitHandler(value);
+          }}
         />
         <View style={{ gap: 10 }}>
-          <Pressable style={styles.buttonContainer} onPress={logIn}>
+          <Pressable
+            style={[styles.buttonContainer, { opacity: disabled ? 0.4 : 1 }]}
+            onPress={() => {
+              onSumbitHandler(value);
+            }}
+            disabled={disabled}
+          >
             <Text style={styles.buttonText}>signin</Text>
           </Pressable>
         </View>

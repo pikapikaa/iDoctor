@@ -4,11 +4,14 @@ import { createContext, PropsWithChildren, useEffect, useState } from "react";
 
 const authKey = "auth-key";
 
+export type Role = "doctor" | "patient";
+
 type AuthState = {
   isLoggedIn: boolean;
-  logIn: () => void;
+  logIn: (name: string) => void;
   logOut: () => void;
   isReady: boolean;
+  login: string;
 };
 
 export const AuthContext = createContext<AuthState>({
@@ -16,14 +19,19 @@ export const AuthContext = createContext<AuthState>({
   isReady: false,
   logIn: () => {},
   logOut: () => {},
+  login: "",
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [login, setLogin] = useState("");
   const router = useRouter();
 
-  const persistState = async (newState: { isLoggedIn: boolean }) => {
+  const persistState = async (newState: {
+    isLoggedIn: boolean;
+    login: string;
+  }) => {
     try {
       const result = JSON.stringify(newState);
       await AsyncStorage.setItem(authKey, result);
@@ -32,15 +40,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const logIn = () => {
+  const logIn = (username: string) => {
+    if (!username) return;
+
     setIsLoggedIn(true);
-    persistState({ isLoggedIn: true });
+    setLogin(username);
+    persistState({ isLoggedIn: true, login: username });
     router.replace("/");
   };
 
   const logOut = () => {
     setIsLoggedIn(false);
-    persistState({ isLoggedIn: false });
+    setLogin("");
+    persistState({ isLoggedIn: false, login: "" });
     router.replace("/login");
   };
 
@@ -51,6 +63,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (value !== null) {
           const auth = JSON.parse(value);
           setIsLoggedIn(auth.isLoggedIn);
+          setLogin(auth.login);
         }
       } catch (error) {
         console.log("store get error: ", error);
@@ -67,6 +80,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         logIn,
         logOut,
         isReady,
+        login,
       }}
     >
       {children}
