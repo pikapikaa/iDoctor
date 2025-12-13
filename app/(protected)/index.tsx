@@ -7,7 +7,7 @@ export default function Index() {
   const { login } = authState;
 
   if (login === "doctor") {
-    return <Redirect href="/(protected)/(tabs)/(home)" />;
+    return <Redirect href="/(protected)/(doctor)/(home)" />;
   }
 
   return <Redirect href="/(protected)/(patient)" />;
