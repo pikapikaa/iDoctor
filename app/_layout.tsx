@@ -1,32 +1,22 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Tabs } from "expo-router";
-import { Fragment } from "react";
+import { AuthProvider } from "@/utils/authContext";
+import { Stack } from "expo-router";
 
-export default function RootLayout() {
+export default function Layout() {
   return (
-    <Fragment>
-      <Tabs screenOptions={{ tabBarActiveTintColor: "green" }}>
-        <Tabs.Screen
-          name="(home)"
+    <AuthProvider>
+      <Stack>
+        <Stack.Screen
+          name="(protected)"
+          options={{ headerShown: false, animation: "none" }}
+        />
+        <Stack.Screen
+          name="login"
           options={{
-            title: "Patients",
+            animation: "none",
             headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-circle-sharp" size={size} color={color} />
-            ),
           }}
         />
-        <Tabs.Screen
-          name="sessions"
-          options={{
-            title: "Sessions",
-            tabBarLabel: "Sessions",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="calendar" size={size} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    </Fragment>
+      </Stack>
+    </AuthProvider>
   );
 }
