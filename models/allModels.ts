@@ -16,9 +16,8 @@ export interface Patient {
 
 export interface Session {
   id: string;
-  doctor: Doctor;
-  patient: Patient;
-  startTime: string;
-  endTime: string;
+  doctorId: string;
+  patientId: string;
+  scheduledAt: string; // ISO date
   status: "scheduled" | "completed" | "cancelled";
 }
