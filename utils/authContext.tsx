@@ -4,8 +4,6 @@ import { createContext, PropsWithChildren, useEffect, useState } from "react";
 
 const authKey = "auth-key";
 
-export type Role = "doctor" | "patient";
-
 type AuthState = {
   isLoggedIn: boolean;
   logIn: (name: User) => void;
