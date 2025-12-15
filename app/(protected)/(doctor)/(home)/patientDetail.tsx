@@ -13,9 +13,9 @@ import {
 } from "react-native";
 
 import { queryClient } from "@/app/_layout";
-import { createSession } from "@/services/api";
 import { AuthContext } from "@/utils/authContext";
 import {
+  useCreateSessionMutation,
   useGetPatientQuery,
   useGetSessionQuery,
   useGetSessionsQuery,
@@ -30,6 +30,8 @@ const PatientDetailScreen = () => {
   const { data } = useGetPatientQuery(id);
   const { data: sessionData, refetch } = useGetSessionQuery(id);
   const { data: allSessions } = useGetSessionsQuery();
+
+  const { mutate: createSession, isPending } = useCreateSessionMutation();
 
   const authState = useContext(AuthContext);
   const { user } = authState;
@@ -69,27 +71,31 @@ const PatientDetailScreen = () => {
   const onScheduleHandler = async () => {
     const patientId = `${id}`;
     const date = addUniqueDate();
-    try {
-      await createSession(`${user?.id}`, patientId, date);
+    createSession(
+      { doctorId: `${user?.id}`, patientId, date },
+      {
+        onSuccess: () => {
+          refetch();
+          queryClient.refetchQueries({
+            queryKey: ["sessions"],
+          });
 
-      refetch();
-      queryClient.refetchQueries({
-        queryKey: ["sessions"],
-      });
-
-      if (Platform.OS === "android") {
-        ToastAndroid.show("Session scheduled!", ToastAndroid.TOP);
-      } else {
-        Alert.alert("Session scheduled!");
+          if (Platform.OS === "android") {
+            ToastAndroid.show("Session scheduled!", ToastAndroid.TOP);
+          } else {
+            Alert.alert("Session scheduled!");
+          }
+        },
+        onError: (error) => {
+          console.log(error);
+          if (Platform.OS === "android") {
+            ToastAndroid.show("Error.", ToastAndroid.TOP);
+          } else {
+            Alert.alert("Error.");
+          }
+        },
       }
-    } catch (error) {
-      console.log(error);
-      if (Platform.OS === "android") {
-        ToastAndroid.show("Error.", ToastAndroid.TOP);
-      } else {
-        Alert.alert("Error.");
-      }
-    }
+    );
   };
 
   if (data) {
@@ -123,6 +129,7 @@ const PatientDetailScreen = () => {
           <Pressable
             style={[styles.buttonContainer]}
             onPress={onScheduleHandler}
+            disabled={isPending}
           >
             <Text style={styles.buttonText}>Schedule Session</Text>
           </Pressable>

@@ -1,5 +1,5 @@
 import { Patient, Session } from "@/models/allModels";
-import { fetchPatientsFromApi } from "@/services/api";
+import { createSession, fetchPatientsFromApi } from "@/services/api";
 import {
   getPatient,
   getPatients,
@@ -7,7 +7,7 @@ import {
   getSessionsByPatient,
   savePatients,
 } from "@/storage/patientStorage";
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 export const useGetPatientsQuery = (
   options?: UseQueryOptions<Patient[], Error, Patient[]>
@@ -59,5 +59,20 @@ export const useGetSessionsQuery = (
     },
     placeholderData: [],
     ...options,
+  });
+};
+
+export const useCreateSessionMutation = () => {
+  return useMutation({
+    mutationKey: ["create-session"],
+    mutationFn: ({
+      doctorId,
+      patientId,
+      date,
+    }: {
+      doctorId: string;
+      patientId: string;
+      date: Date;
+    }) => createSession(doctorId, patientId, date),
   });
 };
