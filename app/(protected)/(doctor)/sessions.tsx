@@ -25,7 +25,7 @@ export default function SessionsScreen() {
       <View style={styles.renderItem} key={item.id}>
         <View>
           <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-            {item.scheduledAt}
+            {item.scheduledAtNormalize}
           </Text>
           <Text style={{ fontSize: 16 }}>
             {item.patient.lastName} {item.patient.firstName}

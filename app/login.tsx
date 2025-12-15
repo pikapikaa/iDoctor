@@ -12,7 +12,7 @@ import {
 import { AuthContext, User } from "@/utils/authContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const users: User[] = [
+export const users: User[] = [
   { id: 2, name: "Doctor", role: "doctor" },
   { id: 1, name: "Patient (Johnson Emily)", role: "patient" },
 ];

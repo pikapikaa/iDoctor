@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useContext } from "react";
 import {
   Alert,
   Image,
@@ -14,7 +14,12 @@ import {
 
 import { queryClient } from "@/app/_layout";
 import { createSession } from "@/services/api";
-import { useGetPatientQuery, useGetSessionQuery } from "./_doctorQueries";
+import { AuthContext } from "@/utils/authContext";
+import {
+  useGetPatientQuery,
+  useGetSessionQuery,
+  useGetSessionsQuery,
+} from "./_doctorQueries";
 
 interface DetailParams {
   id?: string;
@@ -24,32 +29,48 @@ const PatientDetailScreen = () => {
   const { id } = useLocalSearchParams() as DetailParams;
   const { data } = useGetPatientQuery(id);
   const { data: sessionData, refetch } = useGetSessionQuery(id);
+  const { data: allSessions } = useGetSessionsQuery();
+
+  const authState = useContext(AuthContext);
+  const { user } = authState;
 
   const { lastName, firstName, birthDate } = data || {};
 
-  const isOnSameDay =
-    sessionData &&
-    sessionData.some((event) => {
-      const eventDate = new Date(event.scheduledAt);
-      const today = new Date();
-      return (
-        eventDate.getFullYear() === today.getFullYear() &&
-        eventDate.getMonth() === today.getMonth() &&
-        eventDate.getDate() === today.getDate()
-      );
-    });
+  const formatDateKey = (dateInput: string | Date) => {
+    let dateObj;
+
+    if (typeof dateInput === "string") {
+      dateObj = new Date(dateInput);
+    } else if (dateInput instanceof Date) {
+      dateObj = dateInput;
+    } else {
+      throw new Error("Invalid date input provided");
+    }
+
+    return dateObj.toISOString().split("T")[0];
+  };
+
+  const addUniqueDate = () => {
+    const existingDateKeys = new Set(
+      allSessions?.map((item) => item.scheduledAt).map(formatDateKey)
+    );
+
+    let currentDate = new Date();
+    let currentKey = formatDateKey(currentDate);
+
+    while (existingDateKeys.has(currentKey)) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      currentKey = formatDateKey(currentDate);
+    }
+
+    return currentDate;
+  };
 
   const onScheduleHandler = async () => {
-    const doctorId = "1";
     const patientId = `${id}`;
-
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    const date = isOnSameDay ? tomorrow : today;
+    const date = addUniqueDate();
     try {
-      await createSession(doctorId, patientId, date);
+      await createSession(`${user?.id}`, patientId, date);
 
       refetch();
       queryClient.refetchQueries({
