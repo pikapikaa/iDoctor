@@ -1,7 +1,9 @@
+import { fetchPatientsFromApi } from "@/services/api";
+import { getPatients, savePatients } from "@/storage/patientStorage";
 import { AuthContext, AuthProvider } from "@/utils/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 export const queryClient = new QueryClient();
 
@@ -18,6 +20,18 @@ export default function Layout() {
 function RootNavigator() {
   const authState = useContext(AuthContext);
   const { isLoggedIn, isReady } = authState;
+
+  // fill db by data
+  useEffect(() => {
+    const fill = async () => {
+      const patients = await getPatients();
+      if (!patients.length) {
+        const remote = await fetchPatientsFromApi();
+        await savePatients(remote);
+      }
+    };
+    fill();
+  }, []);
 
   if (!isReady) return null;
 
