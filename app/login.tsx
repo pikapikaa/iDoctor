@@ -41,7 +41,7 @@ const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.title}>Login</Text>
-        <View style={{ gap: 5 }}>
+        <View style={{ gap: 15 }}>
           {users.map((item) => (
             <Pressable
               key={item.id}

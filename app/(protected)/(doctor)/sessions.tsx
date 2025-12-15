@@ -6,7 +6,7 @@ import {
 } from "./(home)/_doctorQueries";
 
 export default function SessionsScreen() {
-  const { data: sessions } = useGetSessionsQuery();
+  const { data: sessions, refetch, isRefetching } = useGetSessionsQuery();
   const { data: patientsData } = useGetPatientsQuery();
 
   const patientMap = useMemo(() => {
@@ -42,8 +42,18 @@ export default function SessionsScreen() {
       style={{ flex: 1, backgroundColor: "white" }}
       contentContainerStyle={{ rowGap: 10, padding: 16 }}
       data={sessionsWithPatient}
-      ListEmptyComponent={() => <Text>nema</Text>}
+      ListEmptyComponent={() => (
+        <View style={styles.emptyContainer}>
+          <Text
+            style={[{ textAlign: "center", fontSize: 20, fontWeight: "bold" }]}
+          >
+            No sessions.
+          </Text>
+        </View>
+      )}
       renderItem={renderItem}
+      onRefresh={refetch}
+      refreshing={isRefetching}
     />
   );
 }
@@ -57,5 +67,12 @@ const styles = StyleSheet.create({
     borderColor: "#D3D3D3",
     gap: 20,
     padding: 10,
+  },
+  emptyContainer: {
+    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    borderRadius: 16,
+    alignItems: "center",
   },
 });
