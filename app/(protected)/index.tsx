@@ -4,11 +4,11 @@ import { useContext } from "react";
 
 export default function Index() {
   const authState = useContext(AuthContext);
-  const { login } = authState;
+  const { user } = authState;
 
-  if (login === "doctor") {
+  if (user?.role === "doctor") {
     return <Redirect href="/(protected)/(doctor)/(home)" />;
   }
 
-  return <Redirect href="/(protected)/(patient)" />;
+  return <Redirect href={`/(protected)/(patient)?id=${user?.id}`} />;
 }

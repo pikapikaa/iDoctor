@@ -1,39 +1,34 @@
 import React, { useContext, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 
-import { AuthContext } from "@/utils/authContext";
+import { AuthContext, User } from "@/utils/authContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+const users: User[] = [
+  { id: 2, name: "Doctor", role: "doctor" },
+  { id: 1, name: "Patient (Johnson Emily)", role: "patient" },
+];
 
 const LoginScreen = () => {
   const authState = useContext(AuthContext);
   const { logIn } = authState;
-  const [value, setValue] = useState("");
 
-  const onChange = (text: string) => {
-    setValue(text);
+  const [selected, setSelected] = useState<User>(users[0]);
+
+  const onSumbitHandler = () => {
+    if (!selected) return;
+    logIn(selected);
   };
 
-  const onSumbitHandler = (text: string) => {
-    if (!text) return;
-
-    const username = text.toLowerCase();
-    if (!["doctor", "patient"].includes(username)) {
-      Alert.alert("Error", "Text 'doctor' or 'patient'");
-      return;
-    }
-    logIn(username);
-  };
-
-  const disabled = !value;
+  const disabled = !selected;
 
   return (
     <KeyboardAvoidingView
@@ -46,24 +41,29 @@ const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.title}>Login</Text>
-        <TextInput
-          value={value}
-          placeholder="Enter your login"
-          placeholderTextColor="#9CA3AF"
-          style={styles.input}
-          onChangeText={(value) => {
-            onChange(value);
-          }}
-          onSubmitEditing={() => {
-            onSumbitHandler(value);
-          }}
-        />
+        <View style={{ gap: 5 }}>
+          {users.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() => {
+                setSelected(item);
+              }}
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
+              <Ionicons
+                name={`radio-button-${selected.id === item.id ? "on" : "off"}`}
+                size={24}
+                color="black"
+              />
+              <Text style={{ fontSize: 20 }}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={{ gap: 10 }}>
           <Pressable
             style={[styles.buttonContainer, { opacity: disabled ? 0.4 : 1 }]}
-            onPress={() => {
-              onSumbitHandler(value);
-            }}
+            onPress={onSumbitHandler}
             disabled={disabled}
           >
             <Text style={styles.buttonText}>signin</Text>

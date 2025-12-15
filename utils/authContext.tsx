@@ -8,10 +8,16 @@ export type Role = "doctor" | "patient";
 
 type AuthState = {
   isLoggedIn: boolean;
-  logIn: (name: string) => void;
+  logIn: (name: User) => void;
   logOut: () => void;
   isReady: boolean;
-  login: string;
+  user: User | null;
+};
+
+export type User = {
+  id: number;
+  name: string;
+  role: "doctor" | "patient";
 };
 
 export const AuthContext = createContext<AuthState>({
@@ -19,18 +25,18 @@ export const AuthContext = createContext<AuthState>({
   isReady: false,
   logIn: () => {},
   logOut: () => {},
-  login: "",
+  user: null,
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [login, setLogin] = useState("");
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   const persistState = async (newState: {
     isLoggedIn: boolean;
-    login: string;
+    userData: User | null;
   }) => {
     try {
       const result = JSON.stringify(newState);
@@ -40,19 +46,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const logIn = (username: string) => {
+  const logIn = (username: User) => {
     if (!username) return;
 
     setIsLoggedIn(true);
-    setLogin(username);
-    persistState({ isLoggedIn: true, login: username });
+    setUser(username);
+    persistState({ isLoggedIn: true, userData: username });
     router.replace("/");
   };
 
   const logOut = () => {
     setIsLoggedIn(false);
-    setLogin("");
-    persistState({ isLoggedIn: false, login: "" });
+    setUser(null);
+    persistState({ isLoggedIn: false, userData: null });
     router.replace("/login");
   };
 
@@ -63,7 +69,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (value !== null) {
           const auth = JSON.parse(value);
           setIsLoggedIn(auth.isLoggedIn);
-          setLogin(auth.login);
+          setUser(auth.login);
         }
       } catch (error) {
         console.log("store get error: ", error);
@@ -80,7 +86,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         logIn,
         logOut,
         isReady,
-        login,
+        user,
       }}
     >
       {children}
