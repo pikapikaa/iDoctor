@@ -1,14 +1,19 @@
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  Alert,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from "react-native";
 
+import { queryClient } from "@/app/_layout";
+import { createSession } from "@/services/api";
 import { useGetPatientQuery, useGetSessionQuery } from "./_doctorQueries";
 
 interface DetailParams {
@@ -18,9 +23,24 @@ interface DetailParams {
 const PatientDetailScreen = () => {
   const { id } = useLocalSearchParams() as DetailParams;
   const { data } = useGetPatientQuery(id);
-  const { data: sessionData } = useGetSessionQuery(id);
+  const { data: sessionData, refetch } = useGetSessionQuery(id);
 
   const { lastName, firstName, birthDate } = data || {};
+
+  const onScheduleHandler = async () => {
+    const doctorId = "1";
+    const patientId = `${id}`;
+    await createSession(doctorId, patientId, new Date());
+    queryClient.refetchQueries({
+      queryKey: ["sessions"],
+    });
+    refetch();
+    if (Platform.OS === "android") {
+      ToastAndroid.show("Session scheduled!", ToastAndroid.TOP);
+    } else {
+      Alert.alert("Session scheduled!");
+    }
+  };
 
   if (data) {
     return (
@@ -32,11 +52,28 @@ const PatientDetailScreen = () => {
             <Text style={styles.title}>{`${lastName} ${firstName}`}</Text>
             <Text style={{ fontSize: 25 }}>{`${birthDate}`}</Text>
 
-            {sessionData?.length ? <Text>sessions this</Text> : null}
+            {sessionData?.length ? (
+              <View style={{ marginTop: 10 }}>
+                <Text style={styles.sessionTitle}>List of Sessions:</Text>
+                {sessionData.map((session, index) => (
+                  <View key={session.id} style={{ gap: 10 }}>
+                    <Text style={{ fontSize: 20 }}>
+                      <Text style={{ fontWeight: "bold" }}>
+                        {`${index + 1})`}{" "}
+                      </Text>
+                      {session.scheduledAt}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
           </View>
         </ScrollView>
         <View style={styles.bottomButtonContainer}>
-          <Pressable style={[styles.buttonContainer]} onPress={() => {}}>
+          <Pressable
+            style={[styles.buttonContainer]}
+            onPress={onScheduleHandler}
+          >
             <Text style={styles.buttonText}>Schedule Session</Text>
           </Pressable>
         </View>
@@ -83,6 +120,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "600",
+    fontSize: 20,
+  },
+  sessionTitle: {
+    fontWeight: "700",
     fontSize: 20,
   },
 });

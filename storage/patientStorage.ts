@@ -12,6 +12,10 @@ export const getPatients = async (): Promise<Patient[]> => {
   return storage.get<Patient[]>(PATIENTS_KEY, []);
 };
 
+export const getSessions = async (): Promise<Session[]> => {
+  return storage.get<Session[]>(SESSIONS_KEY, []);
+};
+
 export const getPatient = async (
   patientId: string
 ): Promise<Patient | undefined> => {

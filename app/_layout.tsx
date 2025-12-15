@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useContext } from "react";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export default function Layout() {
   return (
