@@ -10,7 +10,6 @@ import {
 } from "react-native";
 
 import { Patient } from "@/models/allModels";
-import { formatDate } from "@/utils/functions";
 import { useRouter } from "expo-router";
 import { useGetPatientsQuery } from "./_doctorQueries";
 
@@ -26,7 +25,7 @@ export default function Index() {
         style={styles.renderItem}
         key={item.id}
         onPress={() => {
-          router.navigate("/patientDetail");
+          router.navigate(`/patientDetail?id=${item.id}`);
         }}
       >
         <Image
@@ -37,7 +36,7 @@ export default function Index() {
           <Text style={styles.fio}>
             {item.lastName} {item.firstName}
           </Text>
-          <Text style={styles.fio}>{formatDate(item.birthDate)}</Text>
+          <Text style={styles.fio}>{item.birthDate}</Text>
         </View>
       </Pressable>
     ),

@@ -1,4 +1,5 @@
 import { Patient } from "@/models/allModels";
+import { formatDate } from "@/utils/functions";
 
 export const fetchPatientsFromApi = async (): Promise<Patient[]> => {
   const res = await fetch("https://dummyjson.com/users");
@@ -7,9 +8,9 @@ export const fetchPatientsFromApi = async (): Promise<Patient[]> => {
   return json.users.map((u: any) => ({
     id: String(u.id),
     firstName: u.firstName,
-    lastName: u.lalastName,
+    lastName: u.lastName,
     age: u.age,
-    birthDate: u.birthDate,
+    birthDate: formatDate(u.birthDate),
     image: u.image,
   }));
 };

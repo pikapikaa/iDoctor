@@ -1,4 +1,3 @@
-// storage/patientStorage.ts
 import { Patient, Session } from "@/models/allModels";
 import { storage } from "./asyncStorage";
 
@@ -11,6 +10,13 @@ export const savePatients = async (patients: Patient[]) => {
 
 export const getPatients = async (): Promise<Patient[]> => {
   return storage.get<Patient[]>(PATIENTS_KEY, []);
+};
+
+export const getPatient = async (
+  patientId: string
+): Promise<Patient | undefined> => {
+  const patients = await getPatients();
+  return patients.find((s) => s.id === patientId);
 };
 
 export const addPatient = async (patient: Patient) => {

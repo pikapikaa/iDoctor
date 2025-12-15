@@ -1,6 +1,11 @@
-import { Patient } from "@/models/allModels";
+import { Patient, Session } from "@/models/allModels";
 import { fetchPatientsFromApi } from "@/services/api";
-import { getPatients, savePatients } from "@/storage/patientStorage";
+import {
+  getPatient,
+  getPatients,
+  getSessionsByPatient,
+  savePatients,
+} from "@/storage/patientStorage";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 export const useGetPatientsQuery = (
@@ -20,5 +25,21 @@ export const useGetPatientsQuery = (
     },
     placeholderData: [],
     ...options,
+  });
+};
+
+export const useGetPatientQuery = (id?: string) => {
+  return useQuery<Patient | undefined>({
+    queryKey: ["patient", id],
+    queryFn: () => getPatient(id!),
+    enabled: Boolean(id),
+  });
+};
+
+export const useGetSessionQuery = (id?: string) => {
+  return useQuery<Session[] | undefined>({
+    queryKey: ["session", id],
+    queryFn: () => getSessionsByPatient(id!),
+    enabled: Boolean(id),
   });
 };
