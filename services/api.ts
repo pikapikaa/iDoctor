@@ -25,7 +25,8 @@ export const createSession = async (
     id: Date.now().toString(),
     doctorId,
     patientId,
-    scheduledAt: formatFullDate(date),
+    scheduledAt: date.toString(),
+    scheduledAtNormalize: formatFullDate(date),
     status: "scheduled",
   };
 

@@ -27,18 +27,47 @@ const PatientDetailScreen = () => {
 
   const { lastName, firstName, birthDate } = data || {};
 
+  const isOnSameDay =
+    sessionData &&
+    sessionData.some((event) => {
+      const eventDate = new Date(event.scheduledAt);
+      const today = new Date();
+      return (
+        eventDate.getFullYear() === today.getFullYear() &&
+        eventDate.getMonth() === today.getMonth() &&
+        eventDate.getDate() === today.getDate()
+      );
+    });
+
   const onScheduleHandler = async () => {
     const doctorId = "1";
     const patientId = `${id}`;
-    await createSession(doctorId, patientId, new Date());
-    queryClient.refetchQueries({
-      queryKey: ["sessions"],
-    });
-    refetch();
-    if (Platform.OS === "android") {
-      ToastAndroid.show("Session scheduled!", ToastAndroid.TOP);
-    } else {
-      Alert.alert("Session scheduled!");
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const date = isOnSameDay ? tomorrow : today;
+    try {
+      await createSession(doctorId, patientId, date);
+
+      refetch();
+      queryClient.refetchQueries({
+        queryKey: ["sessions"],
+      });
+
+      if (Platform.OS === "android") {
+        ToastAndroid.show("Session scheduled!", ToastAndroid.TOP);
+      } else {
+        Alert.alert("Session scheduled!");
+      }
+    } catch (error) {
+      console.log(error);
+      if (Platform.OS === "android") {
+        ToastAndroid.show("Error.", ToastAndroid.TOP);
+      } else {
+        Alert.alert("Error.");
+      }
     }
   };
 
@@ -61,7 +90,7 @@ const PatientDetailScreen = () => {
                       <Text style={{ fontWeight: "bold" }}>
                         {`${index + 1})`}{" "}
                       </Text>
-                      {session.scheduledAt}
+                      {session.scheduledAtNormalize}
                     </Text>
                   </View>
                 ))}

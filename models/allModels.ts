@@ -18,6 +18,7 @@ export interface Session {
   id: string;
   doctorId: string;
   patientId: string;
-  scheduledAt: string; // ISO date
+  scheduledAt: string;
+  scheduledAtNormalize: string;
   status: "scheduled" | "completed" | "cancelled";
 }

@@ -32,7 +32,7 @@ const PatientScreen = () => {
                     <Text style={{ fontWeight: "bold" }}>
                       {`${index + 1})`}{" "}
                     </Text>
-                    {session.scheduledAt}
+                    {session.scheduledAtNormalize}
                   </Text>
                 </View>
               ))}
