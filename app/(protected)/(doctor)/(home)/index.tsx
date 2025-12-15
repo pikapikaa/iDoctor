@@ -11,7 +11,7 @@ import {
 
 import { Patient } from "@/models/allModels";
 import { useRouter } from "expo-router";
-import { useGetPatientsQuery } from "./_doctorQueries";
+import { useGetPatientsQuery } from "../_doctorQueries";
 
 const ITEM_HEIGHT = 105;
 

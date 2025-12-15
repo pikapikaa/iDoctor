@@ -1,9 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import {
-  useGetPatientsQuery,
-  useGetSessionsQuery,
-} from "./(home)/_doctorQueries";
+import { useGetPatientsQuery, useGetSessionsQuery } from "./_doctorQueries";
 
 export default function SessionsScreen() {
   const { data: sessions, refetch, isRefetching } = useGetSessionsQuery();

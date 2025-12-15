@@ -19,7 +19,7 @@ import {
   useGetPatientQuery,
   useGetSessionQuery,
   useGetSessionsQuery,
-} from "./_doctorQueries";
+} from "../_doctorQueries";
 
 interface DetailParams {
   id?: string;

@@ -5,7 +5,7 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   useGetPatientQuery,
   useGetSessionQuery,
-} from "../(doctor)/(home)/_doctorQueries";
+} from "../(doctor)/_doctorQueries";
 
 const PatientScreen = () => {
   const { id } = useLocalSearchParams();
